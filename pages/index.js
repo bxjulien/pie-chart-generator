@@ -5,7 +5,7 @@ import drawChart from '../utils/drawChart'
 export default function Home() {
   const graphRef = useRef(null);
 
-  const donut = false;
+  const donut = true;
   const ratio = false;
   const displayName = true;
 
@@ -22,10 +22,10 @@ export default function Home() {
   ];
 
   return (
-    <div className={styles.container}>
+    <main className={styles.layout}>
       <h1>PIE CHART GENERATOR</h1>
       <div className={styles.graph} ref={graphRef} />
-    </div>
+    </main>
   )
 }
 
