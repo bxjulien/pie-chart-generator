@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from '../styles/Home.module.scss'
 import drawChart from '../utils/drawChart';
-import { BlockPicker } from "react-color";
 import getRandomColor from "../utils/getRandomColor";
+import Color from "../components/color/Color";
 
 const graphTypes = ['Donut', 'Pie'];
 const sliceContentTypes = ['Text', 'Value', 'Text Value', 'None'];
@@ -27,7 +27,8 @@ export default function Home() {
     sliceContentType: 'Text',
     titlePositionType: 'Top',
     legendPositionType: 'Bottom',
-    slicesRatio: false
+    slicesRatio: false,
+    background: { color: 'black', isPickerActive: false }
   });
 
   useEffect(() => {
@@ -54,20 +55,19 @@ export default function Home() {
     setGraphState({ ...graphState, data: newData });
   }
 
-  const handleChangeColor = (color, index) => {
+  const handleChangeFieldColor = (color, index) => {
     const newData = [...graphState.data];
     newData[index].color = color.hex;
     newData[index].isPickerActive = false;
     setGraphState({ ...graphState, data: newData });
   }
 
-  const handleShowPicker = (index) => {
+  const handleShowFieldPicker = (index) => {
     const newData = [...graphState.data];
     newData[index].isPickerActive = !newData[index].isPickerActive;
     setGraphState({ ...graphState, data: newData });
   }
 
-  // TODO Refacto les select pour n'en faire qu'un
   const selectGraphType = (e) => {
     const type = graphTypes.find(type => type === e.target.value)
     if (type) setGraphState({ ...graphState, graphType: type });
@@ -120,26 +120,38 @@ export default function Home() {
                     type={'number'}
                     onChange={(e) => handleChangeData('value', e, index)}
                   />
-                  <div className={styles.color}>
-                    <div
-                      className={styles.square}
-                      style={{ backgroundColor: field.color }}
-                      onClick={() => handleShowPicker(index)}
-                    >
 
-                    </div>
-                    <div
-                      className={styles.pickerContainer}
-                      style={{ display: (field.isPickerActive ? 'block' : 'none') }}
-                    >
-                      <div className={styles.picker}>
-                        <BlockPicker
-                          color={field.color}
-                          onChangeComplete={(color) => handleChangeColor(color, index)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <Color
+                    color={field.color}
+                    onFocusPicker={() => handleShowFieldPicker(index)}
+                    onSelectColor={(color) => handleChangeFieldColor(color, index)}
+                    isPickerActive={field.isPickerActive}
+                  />
+
+
+
+
+
+
+
+
+
                   <img className={styles.delete} onClick={() => removeField(index)} src={'/cross.svg'} alt="delete" />
                 </div>
               )
@@ -153,37 +165,25 @@ export default function Home() {
             <div>
               <label htmlFor='graphType'>Graph type</label>
               <select name='graphType' onChange={selectGraphType}>
-                {graphTypes.map((type, key) => {
-                  return <option key={key} value={type}>{type}</option>
-                })
-                }
+                {graphTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor='sliceContent'>Slice content</label>
               <select name='sliceContent' onChange={selectSliceContent}>
-                {sliceContentTypes.map((type, key) => {
-                  return <option key={key} value={type}>{type}</option>
-                })
-                }
+                {sliceContentTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor='titlePosition'>Title position</label>
               <select name='titlePosition' onChange={selectTitlePosition}>
-                {titlePositionTypes.map((type, key) => {
-                  return <option key={key} value={type}>{type}</option>
-                })
-                }
+                {titlePositionTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor='legendPosition'>Legend position</label>
               <select name='legendPosition' onChange={selectLegendPosition}>
-                {legendPositionTypes.map((type, key) => {
-                  return <option key={key} value={type}>{type}</option>
-                })
-                }
+                {legendPositionTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
               </select>
             </div>
             <div>
@@ -197,9 +197,23 @@ export default function Home() {
               </label>
             </div>
           </div>
+
+          <div className={styles.colors}>
+            <Color
+              label={'Background color'}
+              color={graphState.background.color}
+              onFocusPicker={() => {
+                setGraphState({ ...graphState, background: { ...graphState.background, isPickerActive: !graphState.background.isPickerActive } })
+              }}
+              onSelectColor={(color) => {
+                setGraphState({ ...graphState, background: { ...graphState.background, color: color.hex, isPickerActive: false } })
+              }}
+              isPickerActive={graphState.background.isPickerActive}
+            />
+          </div>
         </div>
 
-        <Visual graphRef={graphRef} refresh={refresh} />
+        <Visual graphRef={graphRef} refresh={refresh} bgColor={graphState.background.color} />
 
       </div>
     </main>
@@ -214,10 +228,10 @@ const Navbar = () => {
   )
 }
 
-const Visual = ({ graphRef, refresh }) => {
+const Visual = ({ graphRef, refresh, bgColor }) => {
   return (
     <div className={styles.visual}>
-      <div className={styles.graph} ref={graphRef} />
+      <div className={styles.graph} style={{ background: bgColor }} ref={graphRef} />
       <div className={styles.actions}>
         <button onClick={refresh}>refresh</button>
         <button>export</button>
@@ -225,3 +239,4 @@ const Visual = ({ graphRef, refresh }) => {
     </div>
   )
 }
+

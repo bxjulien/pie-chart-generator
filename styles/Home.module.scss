@@ -22,7 +22,7 @@
     .config {
       overflow: hidden;
       width: 60%;
-      
+
       .fields {
         display: flex;
         flex-direction: column;
@@ -30,33 +30,11 @@
         .field {
           display: flex;
           justify-content: space-between;
-          padding: .4rem 0;
-
-          .color {
-            position: relative;
-            .square {
-              cursor: pointer;
-              width: 1.5rem;
-              height: 1.5rem;
-              border-radius: 5px;
-            }
-
-            .pickerContainer {
-              position: absolute;
-              top: 1.5rem;
-              left: -4.55rem;
-              display: none;
-              z-index: 20;
-
-              .picker {
-
-              }
-            }
-          }
+          padding: 0.4rem 0;
 
           .delete {
             cursor: pointer;
-            width: .8rem;
+            width: 0.8rem;
             color: white;
           }
         }
@@ -66,6 +44,10 @@
           justify-content: center;
         }
       }
+
+      .colors {
+
+      }
     }
 
     .visual {
@@ -74,7 +56,6 @@
       .graph {
         z-index: 10;
         margin: 0 auto;
-        background: #494949;
         border-radius: 10px;
       }
 

@@ -1,0 +1,20 @@
+.color {
+  display: flex;
+
+  position: relative;
+
+  .square {
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .pickerContainer {
+      z-index: 999;
+      margin-top: 1.4rem;
+    }
+  }
+}
