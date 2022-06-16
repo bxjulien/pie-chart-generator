@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
-const drawChart = (element, graphState) => {
-  const { data, graphType, slicesRatio, sliceContentType } = graphState;
+const drawChart = (element, chartState) => {
+  const { data, chartType, slicesRatio, sliceContentType } = chartState;
 
   const boxSize = 500;
 
@@ -20,9 +20,9 @@ const drawChart = (element, graphState) => {
   const maxValue = data.reduce((cur, val) => Math.max(cur, val.value), 0);
   const arcGenerator = d3
     .arc()
-    .cornerRadius(graphType === 'Donut' ? 12 : 0)
-    .padAngle(graphType === 'Donut' ? 0.06 : 0)
-    .innerRadius(graphType === 'Donut' ? 100 : 0)
+    .cornerRadius(chartType === 'Donut' ? 12 : 0)
+    .padAngle(chartType === 'Donut' ? 0.06 : 0)
+    .innerRadius(chartType === 'Donut' ? 100 : 0)
     .outerRadius((d) => {
       return slicesRatio ? (250 - (maxValue - d.value)) : (250 - maxValue); // ratio de grandeurs
     });

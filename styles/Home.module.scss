@@ -45,18 +45,17 @@
         }
       }
 
-      .colors {
-
-      }
     }
 
     .visual {
       width: 40%;
 
-      .graph {
+      .chart {
         z-index: 10;
         margin: 0 auto;
         border-radius: 10px;
+
+        transition: background-color .5s ease-in-out;
       }
 
       .actions {
