@@ -1,18 +1,90 @@
 .layout {
-  padding: 0 2rem;
   width: 100%;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
 
-  h1 {
-    color: white;
+  .navbar {
+    display: flex;
+    width: 100%;
+    height: 8vh;
+
+    h1 {
+      margin: 0;
+      color: white;
+    }
   }
 
+  .content {
+    height: 92vh;
+    display: flex;
 
-  .graph {
-    margin: 0 auto;
+    .config {
+      overflow: hidden;
+      width: 60%;
+      
+      .fields {
+        display: flex;
+        flex-direction: column;
+
+        .field {
+          display: flex;
+          justify-content: space-between;
+          padding: .4rem 0;
+
+          .color {
+            position: relative;
+            .square {
+              cursor: pointer;
+              width: 1.5rem;
+              height: 1.5rem;
+              border-radius: 5px;
+            }
+
+            .pickerContainer {
+              position: absolute;
+              top: 1.5rem;
+              left: -4.55rem;
+              display: none;
+              z-index: 20;
+
+              .picker {
+
+              }
+            }
+          }
+
+          .delete {
+            cursor: pointer;
+            width: .8rem;
+            color: white;
+          }
+        }
+
+        .addField {
+          display: flex;
+          justify-content: center;
+        }
+      }
+    }
+
+    .visual {
+      width: 40%;
+
+      .graph {
+        z-index: 10;
+        margin: 0 auto;
+        background: #494949;
+        border-radius: 10px;
+      }
+
+      .actions {
+        justify-self: flex-end;
+      }
+    }
+
+    .actions {
+      display: flex;
+    }
   }
 }

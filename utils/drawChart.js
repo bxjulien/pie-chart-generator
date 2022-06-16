@@ -1,9 +1,11 @@
 import * as d3 from "d3";
 
-const drawChart = (element, data, donut, ratio, displayName) => {
+const drawChart = (element, graphState) => {
+  const { data, graphType, slicesRatio, sliceContentType } = graphState;
+
   const boxSize = 500;
-  
-  d3.select(element).select("svg").remove(); 
+
+  d3.select(element).select("svg").remove();
 
   const svg = d3
     .select(element)
@@ -18,11 +20,11 @@ const drawChart = (element, data, donut, ratio, displayName) => {
   const maxValue = data.reduce((cur, val) => Math.max(cur, val.value), 0);
   const arcGenerator = d3
     .arc()
-    .cornerRadius(donut ? 12 : 0)
-    .padAngle(donut ? 0.06 : 0)
-    .innerRadius(donut ? 100 : 0)
+    .cornerRadius(graphType === 'Donut' ? 12 : 0)
+    .padAngle(graphType === 'Donut' ? 0.06 : 0)
+    .innerRadius(graphType === 'Donut' ? 100 : 0)
     .outerRadius((d) => {
-      return ratio ? (250 - (maxValue - d.value)) : (250 - maxValue); // ratio de grandeurs
+      return slicesRatio ? (250 - (maxValue - d.value)) : (250 - maxValue); // ratio de grandeurs
     });
 
   const pieGenerator = d3
@@ -49,7 +51,7 @@ const drawChart = (element, data, donut, ratio, displayName) => {
   arcs
     .append("text")
     .attr("text-anchor", "middle")
-    .text((d) => `${displayName ? d.data.name : (d.data.value + '%')}`) // label text
+    .text((d) => getSliceContent(sliceContentType, d.data)) // label text
     .style("fill", "white") // label color
     .attr("transform", (d) => {
       const [x, y] = arcGenerator.centroid(d);
@@ -59,5 +61,16 @@ const drawChart = (element, data, donut, ratio, displayName) => {
     .duration(700)
     .style("font-size", "22px");
 };
+
+const getSliceContent = (sliceContentType, data) => {
+  if (sliceContentType === 'Text')
+    return data.name;
+  if (sliceContentType === 'Value')
+    return data.value + '%';
+  if (sliceContentType === 'Text Value')
+    return `${data.name} ${data.value}%`;
+  if (sliceContentType === 'None')
+    return '';
+}
 
 export default drawChart;
