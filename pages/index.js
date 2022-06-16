@@ -12,10 +12,8 @@ const titlePositionTypes = ['Top', 'Bottom'];
 export default function Home() {
   const chartRef = useRef(null);
 
-  const [title, setTitle] = useState('My cool chart');
-
   const [chartState, setChartState] = useState({
-    mustRefresh: false,
+    mustRefresh: true,
     data: [
       { name: "My", value: 40, color: 'blue', isPickerActive: false },
       { name: "cool", value: 12, color: 'orange', isPickerActive: false },
@@ -30,29 +28,17 @@ export default function Home() {
     legendPositionType: 'Bottom',
     slicesRatio: false,
     background: { color: 'black', isPickerActive: false },
-    title: { color: 'black', isPickerActive: false },
+    title: { text: 'My cool chart', color: 'white', isPickerActive: false },
     legend: { color: 'black', isPickerActive: false },
   });
 
   useEffect(() => {
-    const existingChart = JSON.parse(localStorage.getItem('chart'));
-    if (existingChart) {
-      console.log('on la', existingChart)
-      setChartState(existingChart);
-      if (chartRef.current) {
-        drawChart(chartRef.current, existingChart);
-      }
-    }
-  }, [])
-
-/*   useEffect(() => {
     const state = { ...chartState };
     if (state.mustRefresh && chartRef.current) {
       drawChart(chartRef.current, state);
     }
     state.mustRefresh = false;
-    localStorage.setItem('chart', JSON.stringify(state));
-  }, [chartState]); */
+  }, [chartState]);
 
   const handleChangeData = (key, e, index) => {
     const newData = [...chartState.data];
@@ -97,12 +83,12 @@ export default function Home() {
 
   const selectTitlePosition = (e) => {
     const type = titlePositionTypes.find(type => type === e.target.value)
-    if (type) setChartState({ ...chartState, titlePositionType: type, mustRefresh: true });
+    if (type) setChartState({ ...chartState, titlePositionType: type, mustRefresh: false });
   }
 
   const selectLegendPosition = (e) => {
     const type = legendPositionTypes.find(type => type === e.target.value)
-    if (type) setChartState({ ...chartState, legendPositionType: type, mustRefresh: true });
+    if (type) setChartState({ ...chartState, legendPositionType: type, mustRefresh: false });
   }
 
   const refresh = () => {
@@ -120,7 +106,7 @@ export default function Home() {
         <div className={styles.config}>
 
           <div className={styles.title}>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} />
+            <input value={chartState.title.text} onChange={(e) => setChartState({ ...chartState, title: { ...chartState.title, text: e.target.value }, mustRefresh: false })} />
           </div>
 
           <div className={styles.fields}>
@@ -228,7 +214,7 @@ export default function Home() {
           </div>
         </div>
 
-        <Visual chartRef={chartRef} refresh={refresh} bgColor={chartState.background.color} />
+        <Visual chartRef={chartRef} refresh={refresh} title={chartState.title} bgColor={chartState.background.color} />
 
       </div>
     </main>
@@ -243,10 +229,14 @@ const Navbar = () => {
   )
 }
 
-const Visual = ({ chartRef, refresh, bgColor }) => {
+const Visual = ({ chartRef, refresh, title, bgColor }) => {
   return (
     <div className={styles.visual}>
-      <div className={styles.chart} style={{ background: bgColor }} ref={chartRef} />
+
+      <div className={styles.chart} ref={chartRef} style={{ background: bgColor }}>
+        <span className={styles.title} style={{color: title.color}}>{title.text}</span>
+      </div>
+      
       <div className={styles.actions}>
         <button onClick={refresh}>refresh</button>
         <button>export</button>

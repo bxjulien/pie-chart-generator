@@ -44,27 +44,30 @@
           justify-content: center;
         }
       }
-
     }
 
     .visual {
       width: 40%;
 
       .chart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
         z-index: 10;
         margin: 0 auto;
         border-radius: 10px;
 
-        transition: background-color .5s ease-in-out;
+        transition: background-color 0.5s ease-in-out;
+
+        .title {
+          transition: color 0.5s ease-in-out;
+        }
       }
 
       .actions {
         justify-self: flex-end;
       }
-    }
-
-    .actions {
-      display: flex;
     }
   }
 }
