@@ -63,14 +63,16 @@ const drawChart = (element, chartState) => {
 };
 
 const getSliceContent = (sliceContentType, data) => {
-  if (sliceContentType === 'Text')
-    return data.name;
-  if (sliceContentType === 'Value')
-    return data.value + '%';
-  if (sliceContentType === 'Text Value')
-    return `${data.name} ${data.value}%`;
-  if (sliceContentType === 'None')
-    return '';
+  let res = '';
+  if (data.value) {
+    if (sliceContentType === 'Text')
+      res = data.name;
+    if (sliceContentType === 'Value')
+      res = data.value + '%';
+    if (sliceContentType === 'Text Value')
+      res = `${data.name} ${data.value}%`;
+  }  
+  return res;
 }
 
 export default drawChart;

@@ -6,8 +6,7 @@ import Color from "../components/color/Color";
 
 const chartTypes = ['Donut', 'Pie'];
 const sliceContentTypes = ['Text', 'Value', 'Text Value', 'None'];
-const legendPositionTypes = ['Bottom', 'Left', 'Right'];
-const titlePositionTypes = ['Top', 'Bottom'];
+const maxData = 10;
 
 export default function Home() {
   const chartRef = useRef(null);
@@ -24,12 +23,10 @@ export default function Home() {
     displayNames: true,
     chartType: 'Donut',
     sliceContentType: 'Text',
-    titlePositionType: 'Top',
-    legendPositionType: 'Bottom',
     slicesRatio: false,
-    background: { color: 'black', isPickerActive: false },
+    background: { color: '#00D084', isPickerActive: false },
     title: { text: 'My cool chart', color: 'white', isPickerActive: false },
-    legend: { color: 'black', isPickerActive: false },
+    legend: { color: 'white', isPickerActive: false },
   });
 
   useEffect(() => {
@@ -48,8 +45,10 @@ export default function Home() {
 
   const addField = () => {
     const newData = [...chartState.data];
-    newData.push({ name: '', value: '', color: getRandomColor() })
-    setChartState({ ...chartState, data: newData, mustRefresh: false });
+    if (newData.length < maxData) {
+      newData.push({ name: '', value: '', color: getRandomColor() })
+      setChartState({ ...chartState, data: newData, mustRefresh: false });
+    }
   }
 
   const removeField = (index) => {
@@ -61,7 +60,6 @@ export default function Home() {
   const handleChangeFieldColor = (color, index) => {
     const newData = [...chartState.data];
     newData[index].color = color.hex;
-    newData[index].isPickerActive = false;
     setChartState({ ...chartState, data: newData, mustRefresh: true });
   }
 
@@ -80,17 +78,6 @@ export default function Home() {
     const type = sliceContentTypes.find(type => type === e.target.value)
     if (type) setChartState({ ...chartState, sliceContentType: type, mustRefresh: true });
   }
-
-  const selectTitlePosition = (e) => {
-    const type = titlePositionTypes.find(type => type === e.target.value)
-    if (type) setChartState({ ...chartState, titlePositionType: type, mustRefresh: false });
-  }
-
-  const selectLegendPosition = (e) => {
-    const type = legendPositionTypes.find(type => type === e.target.value)
-    if (type) setChartState({ ...chartState, legendPositionType: type, mustRefresh: false });
-  }
-
   const refresh = () => {
     if (chartRef.current) {
       setChartState({ ...chartState, mustRefresh: true });
@@ -98,124 +85,139 @@ export default function Home() {
   }
 
   return (
-    <main className={styles.layout}>
+    <main className={styles.app}>
+      <div className={styles.grid}>
 
-      <Navbar />
+        <Navbar />
 
-      <div className={styles.content}>
-        <div className={styles.config}>
+        <div className={styles.content}>
+          <div className={styles.config}>
+            <div className={styles.panel}>
 
-          <div className={styles.title}>
-            <input value={chartState.title.text} onChange={(e) => setChartState({ ...chartState, title: { ...chartState.title, text: e.target.value }, mustRefresh: false })} />
-          </div>
+              <div className={styles.title}>
+                <input value={chartState.title.text} onChange={(e) => setChartState({ ...chartState, title: { ...chartState.title, text: e.target.value }, mustRefresh: false })} />
+              </div>
 
-          <div className={styles.fields}>
-            {chartState.data.map((field, index) => {
-              return (
-                <div className={styles.field} key={index}>
-                  <input
-                    value={field.name}
-                    type={'text'}
-                    onChange={(e) => handleChangeData('name', e, index)}
-                    onBlur={() => refresh()}
-                  />
-                  <input
-                    value={field.value}
-                    type={'number'}
-                    onChange={(e) => handleChangeData('value', e, index)}
-                    onBlur={() => refresh()}
+              <div className={styles.fields}>
+                {chartState.data.map((field, index) => {
+                  return (
+                    <div className={styles.field} key={index}>
+                      <input
+                        value={field.name}
+                        type={'text'}
+                        onChange={(e) => handleChangeData('name', e, index)}
+                        onBlur={() => refresh()}
+                      />
+                      <input
+                        value={field.value}
+                        type={'number'}
+                        onChange={(e) => handleChangeData('value', e, index)}
+                        onBlur={() => refresh()}
+                      />
+                      <Color
+                        color={field.color}
+                        onFocusPicker={() => handleShowFieldPicker(index)}
+                        onSelectColor={(color) => handleChangeFieldColor(color, index)}
+                        isPickerActive={field.isPickerActive}
+                      />
+                      <img className={styles.delete} onClick={() => removeField(index)} src={'/cross.svg'} alt="delete" />
+                    </div>
+                  )
+                })}
+                {chartState.data.length < maxData &&
+                  <img className={styles.add} src="/cross.svg" onClick={addField} />
+                }
+              </div>
+
+              <div className={styles.controls}>
+                <div className={styles.colors}>
+                  <Color
+                    label={'Background'}
+                    color={chartState.background.color}
+                    onFocusPicker={() => {
+                      setChartState({ ...chartState, background: { ...chartState.background, isPickerActive: !chartState.background.isPickerActive }, mustRefresh: false })
+                    }}
+                    onSelectColor={(color) => {
+                      setChartState({ ...chartState, background: { ...chartState.background, color: color.hex }, mustRefresh: false })
+                    }}
+                    isPickerActive={chartState.background.isPickerActive}
                   />
                   <Color
-                    color={field.color}
-                    onFocusPicker={() => handleShowFieldPicker(index)}
-                    onSelectColor={(color) => handleChangeFieldColor(color, index)}
-                    isPickerActive={field.isPickerActive}
+                    label={'Title'}
+                    color={chartState.title.color}
+                    onFocusPicker={() => {
+                      setChartState({ ...chartState, title: { ...chartState.title, isPickerActive: !chartState.title.isPickerActive }, mustRefresh: false })
+                    }}
+                    onSelectColor={(color) => {
+                      setChartState({ ...chartState, title: { ...chartState.title, color: color.hex }, mustRefresh: false })
+                    }}
+                    isPickerActive={chartState.title.isPickerActive}
                   />
-                  <img className={styles.delete} onClick={() => removeField(index)} src={'/cross.svg'} alt="delete" />
+                  <Color
+                    label={'Legend'}
+                    color={chartState.legend.color}
+                    onFocusPicker={() => {
+                      setChartState({ ...chartState, legend: { ...chartState.legend, isPickerActive: !chartState.legend.isPickerActive }, mustRefresh: false })
+                    }}
+                    onSelectColor={(color) => {
+                      setChartState({ ...chartState, legend: { ...chartState.legend, color: color.hex }, mustRefresh: false })
+                    }}
+                    isPickerActive={chartState.legend.isPickerActive}
+                  />
                 </div>
-              )
-            })}
-            <div className={styles.addField}>
-              <button onClick={addField}>add field</button>
+
+                <div className={styles.settings}>
+                  <div>
+                    <label htmlFor='chartType'>Chart type</label>
+                    <select name='chartType' onChange={selectchartType}>
+                      {chartTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor='sliceContent'>Slices content</label>
+                    <select name='sliceContent' onChange={selectSliceContent}>
+                      {sliceContentTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label>
+                      Slices ratio
+                    </label>
+                    <input
+                      type="checkbox"
+                      checked={chartState.slicesRatio}
+                      onChange={() => setChartState({ ...chartState, slicesRatio: !chartState.slicesRatio, mustRefresh: true })}
+                    />
+                  </div>
+                </div>
+              </div>
+
             </div>
+
           </div>
 
-          <div className={styles.settings}>
-            <div>
-              <label htmlFor='chartType'>chart type</label>
-              <select name='chartType' onChange={selectchartType}>
-                {chartTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor='sliceContent'>Slice content</label>
-              <select name='sliceContent' onChange={selectSliceContent}>
-                {sliceContentTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor='titlePosition'>Title position</label>
-              <select name='titlePosition' onChange={selectTitlePosition}>
-                {titlePositionTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
-              </select>
-            </div>
-            <div>
-              <label htmlFor='legendPosition'>Legend position</label>
-              <select name='legendPosition' onChange={selectLegendPosition}>
-                {legendPositionTypes.map((type, key) => <option key={key} value={type}>{type}</option>)}
-              </select>
-            </div>
-            <div>
-              <label>
-                Slices ratio
-                <input
-                  type="checkbox"
-                  checked={chartState.slicesRatio}
-                  onChange={() => setChartState({ ...chartState, slicesRatio: !chartState.slicesRatio, mustRefresh: true })}
-                />
-              </label>
-            </div>
-          </div>
-
-          <div className={styles.colors}>
-            <Color
-              label={'Background'}
-              color={chartState.background.color}
-              onFocusPicker={() => {
-                setChartState({ ...chartState, background: { ...chartState.background, isPickerActive: !chartState.background.isPickerActive }, mustRefresh: false })
-              }}
-              onSelectColor={(color) => {
-                setChartState({ ...chartState, background: { ...chartState.background, color: color.hex, isPickerActive: false }, mustRefresh: false })
-              }}
-              isPickerActive={chartState.background.isPickerActive}
-            />
-            <Color
-              label={'Title'}
-              color={chartState.title.color}
-              onFocusPicker={() => {
-                setChartState({ ...chartState, title: { ...chartState.title, isPickerActive: !chartState.title.isPickerActive }, mustRefresh: false })
-              }}
-              onSelectColor={(color) => {
-                setChartState({ ...chartState, title: { ...chartState.title, color: color.hex, isPickerActive: false }, mustRefresh: false })
-              }}
-              isPickerActive={chartState.title.isPickerActive}
-            />
-            <Color
-              label={'Legend'}
-              color={chartState.legend.color}
-              onFocusPicker={() => {
-                setChartState({ ...chartState, legend: { ...chartState.legend, isPickerActive: !chartState.legend.isPickerActive }, mustRefresh: false })
-              }}
-              onSelectColor={(color) => {
-                setChartState({ ...chartState, legend: { ...chartState.legend, color: color.hex, isPickerActive: false }, mustRefresh: false })
-              }}
-              isPickerActive={chartState.legend.isPickerActive}
-            />
-          </div>
+          <Visual
+            chartRef={chartRef}
+            data={chartState.data}
+            refresh={refresh}
+            title={chartState.title}
+            bgColor={chartState.background.color}
+            legendColor={chartState.legend.color}
+          />
         </div>
 
-        <Visual chartRef={chartRef} refresh={refresh} title={chartState.title} bgColor={chartState.background.color} />
 
+        <div className={styles.footer}>
+          <button onClick={refresh}>
+            Refresh
+            <img src='/refresh.svg' />
+          </button>
+
+          <button>
+            Export
+            <img src='/download.svg' />
+          </button>
+        </div>
       </div>
     </main>
   )
@@ -229,19 +231,27 @@ const Navbar = () => {
   )
 }
 
-const Visual = ({ chartRef, refresh, title, bgColor }) => {
+const Visual = ({ chartRef, data, title, bgColor, legendColor }) => {
   return (
-    <div className={styles.visual}>
+    <div className={styles.visual} style={{ background: bgColor }}>
 
-      <div className={styles.chart} ref={chartRef} style={{ background: bgColor }}>
-        <span className={styles.title} style={{color: title.color}}>{title.text}</span>
+      <span className={styles.title} style={{ color: title.color }}>{title.text}</span>
+
+      <div className={styles.chart} ref={chartRef}>
       </div>
-      
-      <div className={styles.actions}>
-        <button onClick={refresh}>refresh</button>
-        <button>export</button>
+
+      <div className={styles.legends}>
+        {data.map((d, index) => {
+          return (
+            d.name &&
+            <div className={styles.legend} key={index}>
+              <div className={styles.circle} style={{ background: d.color }}></div>
+              <span className={styles.label} style={{ color: legendColor }}>{d.name}</span>
+            </div>
+          )
+        })}
       </div>
+
     </div>
   )
 }
-

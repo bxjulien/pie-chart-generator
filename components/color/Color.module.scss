@@ -1,20 +1,30 @@
 .color {
   display: flex;
+  justify-content: center;
+  align-items: center;
 
-  position: relative;
+  span {
+    font-size: small;
+    margin-right: .4rem;
+  }
 
   .square {
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 22px;
+    height: 22px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
 
+    position: relative;
+
     .pickerContainer {
-      z-index: 999;
-      margin-top: 1.4rem;
+      position: absolute;
+      z-index: 999 !important;
+      top: 1.3rem;
     }
   }
+
 }
