@@ -3,6 +3,7 @@ import styles from '../styles/Home.module.scss'
 import drawChart from '../utils/drawChart';
 import getRandomColor from "../utils/getRandomColor";
 import Color from "../components/color/Color";
+import exportImage from "../utils/exportImage";
 
 const chartTypes = ['Donut', 'Pie'];
 const sliceContentTypes = ['Text', 'Value', 'Text Value', 'None'];
@@ -10,6 +11,7 @@ const maxData = 10;
 
 export default function Home() {
   const chartRef = useRef(null);
+  const screenshotRef = useRef(null);
 
   const [chartState, setChartState] = useState({
     mustRefresh: true,
@@ -78,11 +80,13 @@ export default function Home() {
     const type = sliceContentTypes.find(type => type === e.target.value)
     if (type) setChartState({ ...chartState, sliceContentType: type, mustRefresh: true });
   }
+
   const refresh = () => {
     if (chartRef.current) {
       setChartState({ ...chartState, mustRefresh: true });
     }
   }
+
 
   return (
     <main className={styles.app}>
@@ -167,6 +171,7 @@ export default function Home() {
                 </div>
 
                 <div className={styles.settings}>
+
                   <div>
                     <label htmlFor='chartType'>Chart type</label>
                     <select name='chartType' onChange={selectchartType}>
@@ -198,6 +203,7 @@ export default function Home() {
 
           <Visual
             chartRef={chartRef}
+            screenshotRef={screenshotRef}
             data={chartState.data}
             refresh={refresh}
             title={chartState.title}
@@ -213,7 +219,7 @@ export default function Home() {
             <img src='/refresh.svg' />
           </button>
 
-          <button>
+          <button onClick={() => exportImage(screenshotRef.current, chartState.title.text)}>
             Export
             <img src='/download.svg' />
           </button>
@@ -231,9 +237,9 @@ const Navbar = () => {
   )
 }
 
-const Visual = ({ chartRef, data, title, bgColor, legendColor }) => {
+const Visual = ({ chartRef, screenshotRef, data, title, bgColor, legendColor }) => {
   return (
-    <div className={styles.visual} style={{ background: bgColor }}>
+    <div className={styles.visual} style={{ background: bgColor }} ref={screenshotRef}>
 
       <span className={styles.title} style={{ color: title.color }}>{title.text}</span>
 

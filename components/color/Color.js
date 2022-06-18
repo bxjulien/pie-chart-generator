@@ -4,13 +4,12 @@ import styles from './Color.module.scss';
 const Color = ({ label, color, onFocusPicker, onSelectColor, isPickerActive }) => {
 
   const test = (e) => {
-    console.log("test")
     e.stopPropagation();
   }
 
   return (
     <div className={styles.color}>
-      {label && <span>{label}</span>}
+      {label && <span className={styles.label}>{label}</span>}
       <div
         className={styles.square}
         style={{ backgroundColor: color }}
